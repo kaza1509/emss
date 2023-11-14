@@ -96,11 +96,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = jwtService.extractUsername(jwt);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            var isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.getExpired() && !t.getRevoked())
-                    .orElse(false);
+//            var isTokenValid = tokenRepository.findByToken(jwt)
+//                    .map(t -> !t.getExpired() && !t.getRevoked())
+//                    .orElse(false);
 
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+//            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+            if (jwtService.isTokenValid(jwt, userDetails)) {
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 Arrays.stream(roles).forEach(role -> {
                     authorities.add(new SimpleGrantedAuthority(role));

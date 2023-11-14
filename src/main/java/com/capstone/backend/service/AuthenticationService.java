@@ -10,7 +10,6 @@ import com.capstone.backend.model.dto.user.UserEmailDTORequest;
 import com.capstone.backend.model.dto.user.UserForgotPasswordDTORequest;
 
 public interface AuthenticationService {
-    public void saveUserToken(User user);
     public RegisterDTOResponse register(RegisterDTORequest request);
 
     public AuthenticationDTOResponse login(AuthenticationDTORequest request) throws Exception;

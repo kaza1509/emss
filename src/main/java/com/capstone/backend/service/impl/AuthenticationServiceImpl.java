@@ -79,8 +79,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = userRepository.findByUsernameOrEmailActive(request.getEmail())
                 .orElseThrow(() -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND));
         authenticate(user.getEmail(), request.getPassword());
-        saveUserToken(user);
-        return buildDTOAuthenticationResponse(user);
+        AuthenticationDTOResponse response = buildDTOAuthenticationResponse(user);
+        System.out.println(response.getAccessToken());
+//        saveUserToken(user, response.getAccessToken());
+        return response;
     }
 
     public UserRole addRoleToUser(User user, Long roleId) {
@@ -116,13 +118,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenRepository.saveAll(validTokens);
     }
 
-    @Override
-    public void saveUserToken(User user) {
+    public void saveUserToken(User user, String accessToken) {
         revokeAllUserTokens(user);
-        var jwtToken = buildDTOAuthenticationResponse(user).getAccessToken();
         var token = Token.builder()
                 .user(user)
-                .token(jwtToken)
+                .token(accessToken)
                 .tokenType(TokenType.BEARER)
                 .revoked(false)
                 .expired(false)
@@ -152,8 +152,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         User user = userRepository.findById(request.getId()).orElseThrow();
         user = userRepository.save(UserMapper.toUser(request, user));
-
-        saveUserToken(user);
 
         //todo: create token send link to gmail
         String token = confirmationTokenService.generateTokenEmail(user);
