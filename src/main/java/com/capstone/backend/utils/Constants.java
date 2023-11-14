@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class Constants {
-    public static final String HOST = "http://localhost:8080";
+    public static final String HOST = "https://emss-production.up.railway.app";
     public static final String HOST_FRONT_END = "http://localhost:8081";
     public static final String HOST_SERVER = HOST + "/api/v1/resource/get-link";
     public static final String API_VERSION = "/api/v1";
