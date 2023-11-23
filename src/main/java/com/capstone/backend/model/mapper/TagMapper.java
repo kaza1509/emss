@@ -3,7 +3,6 @@ package com.capstone.backend.model.mapper;
 import com.capstone.backend.entity.Tag;
 import com.capstone.backend.model.dto.tag.TagDTORequest;
 import com.capstone.backend.model.dto.tag.TagDTOResponse;
-import com.capstone.backend.model.dto.tag.TagSuggestDTORequest;
 import com.capstone.backend.model.dto.tag.TagSuggestDTOResponse;
 
 import java.time.LocalDateTime;

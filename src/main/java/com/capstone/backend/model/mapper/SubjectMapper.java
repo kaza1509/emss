@@ -10,8 +10,15 @@ public class SubjectMapper {
                 .id(subject.getId())
                 .active(subject.getActive())
                 .createdAt(subject.getCreatedAt())
-//                .bookSeriesDTOResponse(BookSeriesMapper.toBookseriesDTOResponse(subject.getBookSeries()))
-                .userId(subject.getUserId())
+                .build();
+    }
+    public static SubjectDTOResponse toSubjectDTOResponse(Subject subject,String userName) {
+        return SubjectDTOResponse.builder()
+                .name(subject.getName())
+                .id(subject.getId())
+                .active(subject.getActive())
+                .createdAt(subject.getCreatedAt())
+                .createBy(userName)
                 .build();
     }
 }

@@ -17,8 +17,9 @@ public class BookSeriesDTOResponse {
     Long id;
     String name;
     Boolean active;
-    Long userId;
+
     LocalDateTime createdAt;
     @JsonIgnore
     ClassDTOResponse classDTOResponse;
+    String createBy;
 }

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +49,11 @@ public class UserResourceCriteria {
         if (request.getResourceName() != null) {
             sql.append(" and ur.resource.name like :name ");
             params.put("name", "%" + request.getResourceName() + "%");
+        }
+
+        if(request.getResourceType() != null) {
+            sql.append(" and ur.resource.resourceType = :resourceType ");
+            params.put("resourceType", request.getResourceType());
         }
 
         sql.append(" and ur.actionType = :actionType and ur.resource.visualType = :visualType " +
@@ -94,7 +98,7 @@ public class UserResourceCriteria {
         return PagingUserResourceDTOResponse.builder()
                 .totalElement(totalResource)
                 .totalPage(totalPage)
-                .data(userResourceDTOResponses)
+                .data(assignNumber(userResourceDTOResponses))
                 .build();
     }
 
@@ -102,18 +106,22 @@ public class UserResourceCriteria {
         Map<String, Object> params = new HashMap<>();
         User user = userHelper.getUserLogin();
         StringBuilder sql = new StringBuilder("select urp.resource from UserResourcePermission urp where " +
-                "urp.user.id = :userId and urp.resource.active = TRUE");
+                "urp.user.id = :userId and urp.resource.active = TRUE and 1 = 1 ");
         params.put("userId", user.getId());
 
-
         if (request.getTabResourceType() != null) {
-            sql.append(" urp.resource.tabResourceType = :tabResourceType ");
+            sql.append(" and urp.resource.tabResourceType = :tabResourceType ");
             params.put("tabResourceType", request.getTabResourceType());
         }
 
         if (request.getResourceName() != null) {
             sql.append(" and urp.resource.name like :name ");
             params.put("name", "%" + request.getResourceName() + "%");
+        }
+
+        if(request.getResourceType() != null) {
+            sql.append(" and urp.resource.resourceType = :resourceType ");
+            params.put("resourceType", request.getResourceType());
         }
 
         sql.append(" and urp.resource.visualType != :visualType and urp.resource.approveType = :approveType and urp.permission like 'DV' ");
@@ -156,7 +164,7 @@ public class UserResourceCriteria {
         return PagingUserResourceDTOResponse.builder()
                 .totalElement(totalResource)
                 .totalPage(totalPage)
-                .data(userResourceDTOResponses)
+                .data(assignNumber(userResourceDTOResponses))
                 .build();
     }
 
@@ -179,6 +187,11 @@ public class UserResourceCriteria {
         if (request.getApproveType() != null) {
             sql.append(" and r.approveType = :approveType ");
             params.put("approveType", request.getApproveType());
+        }
+
+        if(request.getResourceType() != null) {
+            sql.append(" and r.resourceType = :resourceType ");
+            params.put("resourceType", request.getResourceType());
         }
 
         if (request.getVisualType() != null) {
@@ -233,19 +246,6 @@ public class UserResourceCriteria {
                 .totalPage(totalPage)
                 .data(assignNumber(userResourceDTOResponses))
                 .build();
-    }
-
-    public List<UserResourceDTOResponse> assignNumber(List<UserResourceDTOResponse> userResourceDTOResponses) {
-        Map<String, Long> countMap = new HashMap<>();
-
-        return userResourceDTOResponses.stream()
-                .peek(userResourceDTOResponse -> {
-                    String name = userResourceDTOResponse.getResourceName();
-                    String nameIgnoreCase = userResourceDTOResponse.getResourceName().toLowerCase();
-                    Long count = countMap.getOrDefault(nameIgnoreCase, 1L);
-                    countMap.put(name, count + 1);
-                    userResourceDTOResponse.setResourceName(name + "(" + count + ")");
-                }).toList();
     }
 
     public PagingUserResourceDTOResponse viewSearchMyReportResource(ReportResourceDTOFilter request) {
@@ -313,5 +313,18 @@ public class UserResourceCriteria {
                 .totalPage(totalPage)
                 .data(assignNumber(userResourceDTOResponses))
                 .build();
+    }
+
+    public List<UserResourceDTOResponse> assignNumber(List<UserResourceDTOResponse> userResourceDTOResponses) {
+        Map<String, Long> countMap = new HashMap<>();
+
+        return userResourceDTOResponses.stream()
+                .peek(userResourceDTOResponse -> {
+                    String name = userResourceDTOResponse.getResourceName().trim();
+                    String nameIgnoreCase = userResourceDTOResponse.getResourceName().toLowerCase();
+                    Long count = countMap.getOrDefault(nameIgnoreCase, 1L);
+                    countMap.put(nameIgnoreCase, count + 1);
+                    userResourceDTOResponse.setResourceName(name + "(" + count + ")");
+                }).toList();
     }
 }

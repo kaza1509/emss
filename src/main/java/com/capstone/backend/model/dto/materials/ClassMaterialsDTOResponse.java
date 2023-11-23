@@ -1,10 +1,8 @@
 package com.capstone.backend.model.dto.materials;
 
-import com.capstone.backend.entity.BookSeries;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor

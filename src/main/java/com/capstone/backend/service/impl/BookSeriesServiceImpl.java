@@ -2,34 +2,29 @@ package com.capstone.backend.service.impl;
 
 import com.capstone.backend.entity.BookSeries;
 import com.capstone.backend.entity.Class;
-import com.capstone.backend.entity.Subject;
 import com.capstone.backend.entity.User;
 import com.capstone.backend.exception.ApiException;
 import com.capstone.backend.model.dto.PagingDTOResponse;
 import com.capstone.backend.model.dto.bookseries.BookSeriesDTOFilter;
 import com.capstone.backend.model.dto.bookseries.BookSeriesDTORequest;
 import com.capstone.backend.model.dto.bookseries.BookSeriesDTOResponse;
-import com.capstone.backend.model.dto.classes.ClassDTOFilter;
 import com.capstone.backend.model.mapper.BookSeriesMapper;
 import com.capstone.backend.repository.BookSeriesRepository;
 import com.capstone.backend.repository.ClassRepository;
-import com.capstone.backend.repository.SubjectRepository;
+import com.capstone.backend.repository.UserRepository;
 import com.capstone.backend.repository.criteria.BookSeriesCriteria;
-import com.capstone.backend.repository.criteria.ClassesCriteria;
 import com.capstone.backend.service.BookSeriesService;
+import com.capstone.backend.utils.MessageException;
 import com.capstone.backend.utils.UserHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,17 +32,27 @@ import java.util.stream.Collectors;
 public class BookSeriesServiceImpl implements BookSeriesService {
     BookSeriesRepository bookSeriesRepository;
     ClassRepository classRepository;
-    SubjectRepository subjectRepository;
+    MessageException messageException;
     BookSeriesCriteria bookSeriesCriteria;
     UserHelper userHelper;
+    UserRepository userRepository;
 
     @Override
-    public BookSeriesDTOResponse createBookSeries(BookSeriesDTORequest request) {
+    public BookSeriesDTOResponse createBookSeries(BookSeriesDTORequest request, Long classId) {
         User userLogged = userHelper.getUserLogin();
-        // find class id
+
+        Optional<BookSeries> bookSeriesOptional = bookSeriesRepository.findByName(request.getName(),0L , classId);
+        if(bookSeriesOptional.isPresent()) {
+            throw ApiException.badRequestException("Duplicate book series name in class");
+        }
+
         Class classObject = classRepository
-                .findById(request.getClassId())
+                .findById(classId)
                 .orElseThrow(() -> ApiException.notFoundException("Class is not found"));
+        User user = userRepository.findById(classObject.getUserId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
 
         BookSeries bookSeries = BookSeries.builder()
                 .active(true)
@@ -58,46 +63,56 @@ public class BookSeriesServiceImpl implements BookSeriesService {
                 .build();
 
         bookSeries = bookSeriesRepository.save(bookSeries);
-        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries);
+        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries, user.getUsername());
     }
 
     @Override
     public BookSeriesDTOResponse updateBookSeries(Long id, BookSeriesDTORequest request) {
-        // find BookSeries id
+        User userLoggedIn = userHelper.getUserLogin();
+
         BookSeries bookSeries = bookSeriesRepository
                 .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("BookSeries is not found"));
-        // find class id
-        Class classObject = classRepository
-                .findByIdAndActiveTrue(request.getClassId())
-                .orElseThrow(() -> ApiException.notFoundException("Class is not found"));
+
+        Optional<BookSeries> bookSeriesOptional = bookSeriesRepository
+                .findByName(request.getName(),bookSeries.getId() , bookSeries.getClassObject().getId());
+
+        if(bookSeriesOptional.isPresent()) {
+            throw ApiException.badRequestException("Duplicate book series name in class");
+        }
+
+        User user = userRepository.findById(bookSeries.getUserId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
         // update book series
         bookSeries.setName(request.getName());
-        bookSeries.setClassObject(classObject);
+        bookSeries.setUserId(userLoggedIn.getId());
 
 
         bookSeries = bookSeriesRepository.save(bookSeries);
-        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries);
+        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries, user.getUsername());
     }
 
     @Override
-    public void deleteBookSeries(Long id) {
+    public void changeStatus(Long id) {
         // find BookSeries id
         BookSeries bookSeries = bookSeriesRepository
                 .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("BookSeries is not found"));
-        if (isCanDelete(bookSeries)) {
-            bookSeries.setActive(false);
+        if (isCanChangeStatus(bookSeries)) {
+            bookSeries.setActive(!bookSeries.getActive());
             bookSeriesRepository.save(bookSeries);
         } else {
             // throw exception warning
-            throw ApiException.conflictResourceException("Can not delete BookSeries because Subject already exists");
+            throw ApiException.conflictResourceException("Can not change status BookSeries because Subject already exists");
         }
     }
 
     @Override
-    public PagingDTOResponse searchBookSeries(BookSeriesDTOFilter bookSeriesDTOFilter) {
-        return bookSeriesCriteria.searchBookSeries(bookSeriesDTOFilter);
+    public PagingDTOResponse searchBookSeries(BookSeriesDTOFilter bookSeriesDTOFilter, Long classId) {
+        Class classObject = classRepository.findById(classId).orElseThrow(() -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND));
+        return bookSeriesCriteria.searchBookSeries(bookSeriesDTOFilter, classObject.getId());
     }
 
 
@@ -106,10 +121,35 @@ public class BookSeriesServiceImpl implements BookSeriesService {
         BookSeries bookSeries = bookSeriesRepository
                 .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("BookSeries is not found"));
-        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries);
+        User user = userRepository.findById(bookSeries.getUserId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
+        return BookSeriesMapper.toBookseriesDTOResponse(bookSeries,user.getUsername());
     }
+
     // Check exist subject in book series
-    boolean isCanDelete(BookSeries bookSeries) {
-        return true;
+    boolean isCanChangeStatus(BookSeries bookSeries) {
+        return bookSeries.getBookSeriesSubjects().isEmpty();
+    }
+
+    @Override
+    public List<BookSeriesDTOResponse> getListBookSeriesByClassesSubjectId(Long subjectId, Long classId) {
+        List<BookSeries> bookSeries = new ArrayList<>();
+        if(subjectId == null || classId == null) {
+            bookSeries = bookSeriesRepository.findBookSeriesByActiveTrue();
+        }
+        else bookSeries = bookSeriesRepository.findAllBySubjectIdClassId(subjectId, classId);
+        return bookSeries.stream().map(BookSeriesMapper::toBookseriesDTOResponse).toList();
+    }
+
+    @Override
+    public List<BookSeriesDTOResponse> getListBookSeriesByClassId(Long classId) {
+        List<BookSeries> bookSeries = new ArrayList<>();
+        if(classId == null) {
+            bookSeries = bookSeriesRepository.findBookSeriesByActiveTrue();
+        }
+        else bookSeries = bookSeriesRepository.findAllByClassId(classId);
+        return bookSeries.stream().map(BookSeriesMapper::toBookseriesDTOResponse).toList();
     }
 }

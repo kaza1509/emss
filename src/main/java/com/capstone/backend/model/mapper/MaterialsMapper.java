@@ -1,12 +1,10 @@
 package com.capstone.backend.model.mapper;
 
-import com.capstone.backend.entity.*;
 import com.capstone.backend.entity.Class;
+import com.capstone.backend.entity.*;
 import com.capstone.backend.entity.type.TabResourceType;
 import com.capstone.backend.model.dto.materials.*;
 import com.capstone.backend.utils.Constants;
-
-import java.util.List;
 
 public class MaterialsMapper {
     public static LessonMaterialsDTOResponse toLessonMaterialsDTOResponse(Lesson lesson) {

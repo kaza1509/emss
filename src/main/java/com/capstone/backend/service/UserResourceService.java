@@ -1,7 +1,9 @@
 package com.capstone.backend.service;
 
-import com.capstone.backend.model.dto.userresource.*;
-import org.springframework.core.io.Resource;
+import com.capstone.backend.model.dto.userresource.MyUserResourceDTOFilter;
+import com.capstone.backend.model.dto.userresource.PagingUserResourceDTOResponse;
+import com.capstone.backend.model.dto.userresource.UserResourceRequest;
+import com.capstone.backend.model.dto.userresource.UserResourceSavedOrSharedDTOFilter;
 
 public interface UserResourceService {
     public Boolean actionResource(UserResourceRequest request);

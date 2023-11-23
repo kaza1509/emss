@@ -11,7 +11,16 @@ public class BookSeriesMapper {
                 .active(bookSeries.getActive())
                 .createdAt(bookSeries.getCreatedAt())
                 .classDTOResponse(ClassMapper.toClassDTOResponse(bookSeries.getClassObject()))
-                .userId(bookSeries.getUserId())
+                .build();
+    }
+    public static BookSeriesDTOResponse toBookseriesDTOResponse(BookSeries bookSeries, String userName) {
+        return BookSeriesDTOResponse.builder()
+                .name(bookSeries.getName())
+                .id(bookSeries.getId())
+                .active(bookSeries.getActive())
+                .createdAt(bookSeries.getCreatedAt())
+                .classDTOResponse(ClassMapper.toClassDTOResponse(bookSeries.getClassObject()))
+                .createBy(userName)
                 .build();
     }
 }

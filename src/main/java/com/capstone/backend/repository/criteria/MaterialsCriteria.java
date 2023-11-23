@@ -2,7 +2,10 @@ package com.capstone.backend.repository.criteria;
 
 import com.capstone.backend.entity.Class;
 import com.capstone.backend.entity.*;
-import com.capstone.backend.entity.type.*;
+import com.capstone.backend.entity.type.ActionType;
+import com.capstone.backend.entity.type.ApproveType;
+import com.capstone.backend.entity.type.TabResourceType;
+import com.capstone.backend.entity.type.VisualType;
 import com.capstone.backend.model.dto.materials.DataMaterialsDTOResponse;
 import com.capstone.backend.model.dto.materials.MaterialsFilterDTORequest;
 import com.capstone.backend.model.dto.materials.PagingMaterialDTOResponse;
@@ -13,7 +16,6 @@ import com.capstone.backend.model.mapper.ResourceMapper;
 import com.capstone.backend.repository.*;
 import com.capstone.backend.utils.CheckPermissionResource;
 import com.capstone.backend.utils.Constants;
-import com.capstone.backend.utils.MessageException;
 import com.capstone.backend.utils.UserHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -128,7 +130,7 @@ public class MaterialsCriteria {
         sql.append(" and re.visualType = :visualType ");
         params.put("visualType", VisualType.PUBLIC);
 
-        sql.append(" order by re.createdAt ");
+        sql.append(" order by re.viewCount desc, re.createdAt desc ");
 
         data.pageIndex = request.getPageIndex() != null ? request.getPageIndex() : data.pageIndex;
         data.pageSize = request.getPageSize() != null ? request.getPageSize() : data.pageSize;

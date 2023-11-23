@@ -19,8 +19,4 @@ public class SubjectDTORequest {
     @NotEmpty(message = "Subject name is not null")
     @Length(min = 4, message = "Subject name is greater than 3")
     String name;
-
-    @Schema(description = "book seriesId is mandatory", example = "1")
-    @NotNull(message = "book seriesId is mandatory")
-    Long bookseriesId;
 }

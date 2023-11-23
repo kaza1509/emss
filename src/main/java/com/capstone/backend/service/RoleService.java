@@ -2,8 +2,6 @@ package com.capstone.backend.service;
 
 import com.capstone.backend.model.dto.role.*;
 
-import java.util.List;
-
 public interface RoleService {
     public PagingRoleDTOResponse viewSearchRole(RoleDTOFilter request);
 

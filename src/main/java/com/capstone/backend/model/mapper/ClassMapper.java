@@ -10,7 +10,15 @@ public class ClassMapper {
                 .id(classEntity.getId())
                 .active(classEntity.getActive())
                 .createdAt(classEntity.getCreatedAt())
-                .userId(classEntity.getUserId())
+                .build();
+    }
+    public static ClassDTOResponse toClassDTOResponse(Class classEntity, String userName) {
+        return ClassDTOResponse.builder()
+                .name(classEntity.getName())
+                .id(classEntity.getId())
+                .active(classEntity.getActive())
+                .createdAt(classEntity.getCreatedAt())
+                .createBy(userName)
                 .build();
     }
 }

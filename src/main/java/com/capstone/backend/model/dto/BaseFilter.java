@@ -11,6 +11,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseFilter {
     Long pageIndex = Constants.DEFAULT_PAGE_INDEX;
-    Long pageSize = Constants.DEFAULT_TAG_PAGE_SIZE;
+    Long pageSize = Constants.DEFAULT_PAGE_SIZE;
     String name = "";
 }

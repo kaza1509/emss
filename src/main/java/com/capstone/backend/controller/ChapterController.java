@@ -28,37 +28,42 @@ public class ChapterController {
 
     @Operation(summary = "Create Chapter")
     @PostMapping("")
-    public ResponseEntity<ChapterDTOResponse> create(@Valid @RequestBody ChapterDTORequest request) {
-        ChapterDTOResponse chapterDTOResponse = chapterService.createChapter(request);
+    public ResponseEntity<ChapterDTOResponse> create(@Valid @RequestBody ChapterDTORequest request, Long bookVolumeId) {
+        ChapterDTOResponse chapterDTOResponse = chapterService.createChapter(request, bookVolumeId);
         return ResponseEntity.ok(chapterDTOResponse);
     }
 
     @Operation(summary = "Update Chapter")
     @PutMapping("/{id}")
     public ResponseEntity<ChapterDTOResponse> update(@Valid @RequestBody ChapterDTORequest request,
-                                                        @PathVariable @NotEmpty Long id) {
+                                                     @PathVariable @NotEmpty Long id) {
         ChapterDTOResponse chapterDTOResponse = chapterService.updateChapter(id, request);
         return ResponseEntity.ok(chapterDTOResponse);
     }
 
-    @Operation(summary = "Delete Chapter")
+    @Operation(summary = "Change Status Chapter")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        chapterService.deleteChapter(id);
+    public ResponseEntity<Boolean> changeStatus(@PathVariable @NotEmpty Long id) {
+        chapterService.changeStatus(id);
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "Search Chapter")
-    @GetMapping("/display")
-    public PagingDTOResponse searchChapter(@ModelAttribute ChapterDTOFilter chapterDTOFilter) {
-        return chapterService.searchChapter(chapterDTOFilter);
+    @Operation(summary = "Search Chapter By bookVolumeId")
+    @GetMapping("/display/{bookVolumeId}")
+    public PagingDTOResponse searchChapter(@ModelAttribute ChapterDTOFilter chapterDTOFilter,
+                                           @PathVariable(name = "bookVolumeId" ) Long bookVolumeId) {
+        return chapterService.searchChapter(chapterDTOFilter, bookVolumeId);
     }
-
 
     @Operation(summary = "View Chapter by Id")
     @GetMapping("/{id}")
     public ResponseEntity<ChapterDTOResponse> viewChapter(@PathVariable @NotEmpty Long id) {
         ChapterDTOResponse chapterDTOResponse = chapterService.viewChapterById(id);
         return ResponseEntity.ok(chapterDTOResponse);
+    }
+
+    @GetMapping("/list-by-book-volume")
+    public ResponseEntity<?> getListChapterByBookVolumeId(@RequestParam(required = false) Long bookVolumeId) {
+        return ResponseEntity.ok(chapterService.getListChapterByBookVolumeId(bookVolumeId));
     }
 }

@@ -1,6 +1,5 @@
 package com.capstone.backend.model.dto.materials;
 
-import com.capstone.backend.model.dto.classes.ClassDTOResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

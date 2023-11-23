@@ -14,9 +14,6 @@ import javax.validation.constraints.NotNull;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDTORequest {
-    @Schema(example = "1", description = "UserId must be integer")
-    @NotNull(message = "{userId.not-null}")
-    Long userId;
     @Schema(example = "1", description = "ResourceId must be integer")
     @NotNull(message = "{resourceId.not-null}")
     Long resourceId;

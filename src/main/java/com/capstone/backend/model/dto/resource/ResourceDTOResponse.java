@@ -1,9 +1,9 @@
 package com.capstone.backend.model.dto.resource;
 
-import com.capstone.backend.entity.User;
 import com.capstone.backend.entity.type.ApproveType;
 import com.capstone.backend.entity.type.ResourceType;
 import com.capstone.backend.entity.type.VisualType;
+import com.capstone.backend.model.dto.user.UserDTOResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -28,4 +28,5 @@ public class ResourceDTOResponse {
     String resourceSrc;
     Long point;
     Long size;
+    UserDTOResponse author;
 }

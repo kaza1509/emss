@@ -32,4 +32,7 @@ public class BookSeriesSubject {
 
     @OneToMany(mappedBy = "bookSeriesSubject")
     List<BookVolume> bookVolumes;
+
+    @Column(nullable = false)
+    Long userId;
 }

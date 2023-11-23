@@ -1,6 +1,6 @@
 package com.capstone.backend.model.dto.bookvolume;
 
-import com.capstone.backend.model.dto.classes.ClassDTOResponse;
+import com.capstone.backend.model.dto.bookseriesSubject.BookSeriesSubjectDTOResponse;
 import com.capstone.backend.model.dto.subject.SubjectDTOResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -18,8 +18,10 @@ public class BookVolumeDTOResponse {
     Long id;
     String name;
     Boolean active;
-    Long userId;
     LocalDateTime createdAt;
     @JsonIgnore
     SubjectDTOResponse subjectDTOResponse;
+    @JsonIgnore
+    BookSeriesSubjectDTOResponse bookSeriesSubject;
+    String createBy;
 }

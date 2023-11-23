@@ -11,7 +11,16 @@ public class ChapterMapper {
                 .active(chapter.getActive())
                 .createdAt(chapter.getCreatedAt())
                 .bookVolumeDTOResponse(BookVolumeMapper.toBookVolumeDTOResponse(chapter.getBookVolume()))
-                .userId(chapter.getUserId())
+                .build();
+    }
+    public static ChapterDTOResponse toChapterDTOResponse(Chapter chapter, String userName) {
+        return ChapterDTOResponse.builder()
+                .name(chapter.getName())
+                .id(chapter.getId())
+                .active(chapter.getActive())
+                .createdAt(chapter.getCreatedAt())
+                .bookVolumeDTOResponse(BookVolumeMapper.toBookVolumeDTOResponse(chapter.getBookVolume()))
+                .createBy(userName)
                 .build();
     }
 }

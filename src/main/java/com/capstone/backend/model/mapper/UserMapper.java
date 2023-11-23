@@ -1,14 +1,12 @@
 package com.capstone.backend.model.mapper;
 
 import com.capstone.backend.entity.Class;
-import com.capstone.backend.entity.Role;
 import com.capstone.backend.entity.User;
 import com.capstone.backend.model.dto.profle.ProfileDTOResponse;
 import com.capstone.backend.model.dto.register.RegisterDTORequest;
 import com.capstone.backend.model.dto.register.RegisterDTOResponse;
 import com.capstone.backend.model.dto.register.RegisterDTOUpdate;
 import com.capstone.backend.model.dto.role.RoleDTODisplay;
-import com.capstone.backend.model.dto.role.RoleDTOResponse;
 import com.capstone.backend.model.dto.user.PreviewInfoDTOResponse;
 import com.capstone.backend.model.dto.user.UserDTOResponse;
 import com.capstone.backend.utils.Constants;
@@ -17,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.capstone.backend.utils.Constants.HOST_SERVER;
+import static com.capstone.backend.utils.Constants.HOST_SERVER_RESOURCE;
 
 public class UserMapper {
     public static User toUser(RegisterDTORequest request, PasswordEncoder passwordEncoder) {
@@ -62,7 +60,7 @@ public class UserMapper {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .active(user.getActive())
-                .avatar(HOST_SERVER + "/" + user.getAvatar())
+                .avatar(HOST_SERVER_RESOURCE + "/" + user.getAvatar())
                 .gender(user.getGender())
                 .dateOfBirth(user.getDateOfBirth())
                 .phone(user.getPhone())
@@ -85,7 +83,7 @@ public class UserMapper {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .active(user.getActive())
-                .avatar(HOST_SERVER + "/" + user.getAvatar())
+                .avatar(HOST_SERVER_RESOURCE + "/" + user.getAvatar())
                 .gender(user.getGender())
                 .dateOfBirth(user.getDateOfBirth())
                 .phone(user.getPhone())
@@ -104,7 +102,7 @@ public class UserMapper {
                 .userId(user.getId())
                 .fullName(user.getFirstname()+" "+user.getLastname())
                 .schoolName(user.getSchool())
-                .avatar(HOST_SERVER + "/" + user.getAvatar())
+                .avatar(HOST_SERVER_RESOURCE + "/" + user.getAvatar())
                 .username(user.getUsername())
                 .build();
     }

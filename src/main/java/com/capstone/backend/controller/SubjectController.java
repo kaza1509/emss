@@ -1,9 +1,7 @@
 package com.capstone.backend.controller;
 
-import com.capstone.backend.model.dto.PagingDTOResponse;
 import com.capstone.backend.model.dto.subject.SubjectDTOFilter;
 import com.capstone.backend.model.dto.subject.SubjectDTORequest;
-import com.capstone.backend.model.dto.subject.SubjectDTOResponse;
 import com.capstone.backend.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,37 +28,45 @@ public class SubjectController {
 
     @Operation(summary = "create Subject")
     @PostMapping("")
-    public ResponseEntity<SubjectDTOResponse> create(@Valid @RequestBody SubjectDTORequest request) {
-        SubjectDTOResponse response = subjectService.createSubject(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> create(@Valid @RequestBody SubjectDTORequest request) {
+        return ResponseEntity.ok(subjectService.createSubject(request));
     }
 
     @Operation(summary = "Update subject")
     @PutMapping("/{id}")
-    public ResponseEntity<SubjectDTOResponse> update(@Valid @RequestBody SubjectDTORequest request,
-                                                        @PathVariable @NotEmpty Long id) {
-        SubjectDTOResponse subjectDTOResponse = subjectService.updateSubject(id, request);
-        return ResponseEntity.ok(subjectDTOResponse);
+    public ResponseEntity<?> update(@Valid @RequestBody SubjectDTORequest request,
+                                    @PathVariable @NotEmpty Long id) {
+        return ResponseEntity.ok(subjectService.updateSubject(id, request));
     }
 
-    @Operation(summary = "Delete Subject")
+    @Operation(summary = "changeStatus Subject")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        subjectService.deleteSubject(id);
+    public ResponseEntity<?> changeStatus(@PathVariable @NotEmpty Long id) {
+        subjectService.changeStatus(id);
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "Search Subject")
+    @Operation(summary = "Search Subject By Book SeriesId")
     @GetMapping("/display")
-    public PagingDTOResponse searchSubject(@ModelAttribute SubjectDTOFilter subjectDTOFilter) {
-        return subjectService.searchSubject(subjectDTOFilter);
+    public ResponseEntity<?> searchSubject(@ModelAttribute SubjectDTOFilter subjectDTOFilter) {
+        return ResponseEntity.ok(subjectService.searchSubject(subjectDTOFilter));
     }
 
     @Operation(summary = "View Subject by Id")
     @GetMapping("/{id}")
-    public ResponseEntity<SubjectDTOResponse> viewSubject(@PathVariable @NotEmpty Long id) {
-       SubjectDTOResponse subjectDTOResponse = subjectService.viewSubjectById(id);
-        return ResponseEntity.ok(subjectDTOResponse);
+    public ResponseEntity<?> viewSubject(@PathVariable @NotEmpty Long id) {
+        return ResponseEntity.ok(subjectService.viewSubjectById(id));
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getListSubjects() {
+        return ResponseEntity.ok(subjectService.getListSubjects());
+    }
+
+    @GetMapping("/list-by-book-series")
+    public ResponseEntity<?> getListSubjectsByBookSeries(@RequestParam(required = false) Long bookSeriesId) {
+        return ResponseEntity.ok(subjectService.getListSubjectsByBookSeries(bookSeriesId));
+    }
+
 
 }

@@ -11,7 +11,16 @@ public class LessonMapper {
                 .active(lesson.getActive())
                 .createdAt(lesson.getCreatedAt())
                 .chapterDTOResponse(ChapterMapper.toChapterDTOResponse(lesson.getChapter()))
-                .userId(lesson.getUserId())
+                .build();
+    }
+    public static LessonDTOResponse toLessonDTOResponse(Lesson lesson,String userName) {
+        return LessonDTOResponse.builder()
+                .name(lesson.getName())
+                .id(lesson.getId())
+                .active(lesson.getActive())
+                .createdAt(lesson.getCreatedAt())
+                .chapterDTOResponse(ChapterMapper.toChapterDTOResponse(lesson.getChapter()))
+                .createBy(userName)
                 .build();
     }
 }

@@ -26,8 +26,6 @@ import static com.capstone.backend.utils.Constants.API_VERSION;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @CrossOrigin
 public class ClassController {
-
-
     ClassService classService;
 
     @Operation(summary = "create Class")
@@ -45,14 +43,13 @@ public class ClassController {
         return ResponseEntity.ok(classDTOResponse);
     }
 
-    @Operation(summary = "Delete Class")
+    @Operation(summary = "Change Status Class")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        classService.deleteClass(id);
-        return ResponseEntity.ok(true);
+    public ResponseEntity<Boolean> changeStatus(@PathVariable @NotEmpty Long id) {
+        return ResponseEntity.ok(classService.changeStatus(id));
     }
 
-    @Operation(summary = "Search Class")
+    @Operation(summary = "display Class")
     @GetMapping("/display")
     public PagingDTOResponse searchClass(@ModelAttribute ClassDTOFilter classDTOFilter) {
         return classService.searchClass(classDTOFilter);
@@ -65,5 +62,14 @@ public class ClassController {
         return ResponseEntity.ok(classDTOResponse);
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<?> getListClasses() {
+        return ResponseEntity.ok(classService.getListClasses());
+    }
 
+    @GetMapping("/list-by-subject")
+    public ResponseEntity<?> getListClassesBySubject(@RequestParam(required = false) Long subjectId) {
+        return ResponseEntity.ok(classService.getListClassesBySubjectId(subjectId));
+    }
 }
+

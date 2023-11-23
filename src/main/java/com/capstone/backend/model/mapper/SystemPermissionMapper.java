@@ -3,7 +3,6 @@ package com.capstone.backend.model.mapper;
 import com.capstone.backend.entity.Role;
 import com.capstone.backend.entity.SystemPermission;
 import com.capstone.backend.entity.UserRolePermission;
-import com.capstone.backend.model.dto.role.RoleDTODetailResponse;
 import com.capstone.backend.model.dto.systempermission.*;
 
 import java.time.LocalDateTime;

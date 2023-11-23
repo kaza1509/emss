@@ -30,37 +30,59 @@ public class BookVolumeController {
 
     @Operation(summary = "Create BookVolume")
     @PostMapping("")
-    public ResponseEntity<BookVolumeDTOResponse> create(@Valid @RequestBody BookVolumeDTORequest request) {
-        BookVolumeDTOResponse bookVolumeDTOResponse = bookVolumeService.createBookVolume(request);
-        return ResponseEntity.ok(bookVolumeDTOResponse);
+    public ResponseEntity<?> create(
+            @Valid @RequestBody BookVolumeDTORequest request,
+            @RequestParam Long bookSeriesSubjectId
+    ) {
+        return ResponseEntity.ok(bookVolumeService.createBookVolume(request, bookSeriesSubjectId));
     }
 
     @Operation(summary = "Update BookVolume")
     @PutMapping("/{id}")
-    public ResponseEntity<BookVolumeDTOResponse> update(@Valid @RequestBody BookVolumeDTORequest request,
-                                                     @PathVariable @NotEmpty Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody BookVolumeDTORequest request,
+                                    @PathVariable @NotEmpty Long id) {
         BookVolumeDTOResponse bookVolumeDTOResponse = bookVolumeService.updateBookVolume(id, request);
         return ResponseEntity.ok(bookVolumeDTOResponse);
     }
 
-    @Operation(summary = "Delete BookVolume")
+    @Operation(summary = "Change Status BookVolume")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        bookVolumeService.deleteBookVolume(id);
+    public ResponseEntity<?> changeStatus(@PathVariable @NotEmpty Long id) {
+        bookVolumeService.changeStatus(id);
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "Search BookVolume")
-    @GetMapping("/display")
-    public PagingDTOResponse searchBookVolume(@ModelAttribute BookVolumeDTOFilter bookVolumeDTOFilter) {
-        return bookVolumeService.searchBookVolume(bookVolumeDTOFilter);
+    @Operation(summary = "Search Book volume By subjectId")
+    @GetMapping("/display/{bookSeriesSubjectId}")
+    public PagingDTOResponse searchBookVolume(
+            @ModelAttribute BookVolumeDTOFilter bookVolumeDTOFilter,
+            @PathVariable(name = "bookSeriesSubjectId") Long bookSeriesSubjectId
+    ) {
+        return bookVolumeService.searchBookVolume(bookVolumeDTOFilter, bookSeriesSubjectId);
     }
 
 
     @Operation(summary = "View BookVolume by Id")
     @GetMapping("/{id}")
-    public ResponseEntity<BookVolumeDTOResponse> viewBookVolume(@PathVariable @NotEmpty Long id) {
+    public ResponseEntity<?> viewBookVolume(@PathVariable @NotEmpty Long id) {
         BookVolumeDTOResponse bookVolumeDTOResponse = bookVolumeService.viewBookVolumeById(id);
         return ResponseEntity.ok(bookVolumeDTOResponse);
     }
+
+    @GetMapping("/list-by-subject-book-series")
+    public ResponseEntity<?> getListBookVolumeBySubjectId(
+            @RequestParam(required = false) Long subjectId,
+            @RequestParam(required = false) Long bookSeriesId
+    ) {
+        return ResponseEntity.ok(bookVolumeService.getListBookVolumeBySubjectId(subjectId, bookSeriesId));
+    }
+
+    @GetMapping("/list-by-book-series-subject")
+    public ResponseEntity<?> getListBookVolumeByBookSeriesSubjectId(
+            @RequestParam(required = false) Long bookSeriesSubjectId
+    ) {
+        return ResponseEntity.ok(bookVolumeService.getListBookVolumeByBookSeriesSubjectId(bookSeriesSubjectId));
+    }
+
+
 }

@@ -1,12 +1,9 @@
 package com.capstone.backend.model.dto.resource;
 
-import com.capstone.backend.entity.type.ResourceType;
 import com.capstone.backend.entity.type.TabResourceType;
 import com.capstone.backend.utils.Constants;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter

@@ -19,8 +19,4 @@ public class LessonDTORequest {
     @NotEmpty(message = "Lesson name is not null")
     @Length(min = 4, message = "Lesson name is greater than 3")
     String name;
-
-    @Schema(description = "Chapter id is mandatory", example = "1")
-    @NotNull(message = "Chapter id is mandatory")
-    Long chapterId;
 }

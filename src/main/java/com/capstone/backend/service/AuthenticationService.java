@@ -1,6 +1,5 @@
 package com.capstone.backend.service;
 
-import com.capstone.backend.entity.User;
 import com.capstone.backend.model.dto.authentication.AuthenticationDTORequest;
 import com.capstone.backend.model.dto.authentication.AuthenticationDTOResponse;
 import com.capstone.backend.model.dto.register.RegisterDTORequest;

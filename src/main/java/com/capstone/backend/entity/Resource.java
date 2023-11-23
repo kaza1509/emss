@@ -37,6 +37,7 @@ public class Resource {
     LocalDateTime createdAt;
 
     Boolean active;
+    Long viewCount = 0L;
 
     @Enumerated(EnumType.STRING)
     ApproveType approveType;

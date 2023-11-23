@@ -81,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticate(user.getEmail(), request.getPassword());
         AuthenticationDTOResponse response = buildDTOAuthenticationResponse(user);
         System.out.println(response.getAccessToken());
-//        saveUserToken(user, response.getAccessToken());
+        saveUserToken(user, response.getAccessToken());
         return response;
     }
 
@@ -96,18 +96,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-//    private void revokeAllUserTokens(User user) {
-//        var validTokens = tokenRepository.findAlValidTokenByUser(user.getId());
-//        if(validTokens.isEmpty()) return;
-//        validTokens.forEach(t -> {
-//            t.setExpired(true);
-//            t.setRevoked(true);
-//        });
-//        tokenRepository.saveAll(validTokens);
-//    }
-
     private void revokeAllUserTokens(User user) {
         var validTokens = tokenRepository.findAlValidTokenByUser(user.getId());
+        validTokens.forEach(t -> System.out.println(t.getExpired()));
         if (validTokens.isEmpty()) return;
         validTokens.forEach(t -> {
             if (!jwtService.isTokenValid(t.getToken(), user)) {

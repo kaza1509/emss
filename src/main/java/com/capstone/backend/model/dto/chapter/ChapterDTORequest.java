@@ -19,8 +19,4 @@ public class ChapterDTORequest {
     @NotEmpty(message = "Chapter name is not null")
     @Length(min = 4, message = "Chapter name is greater than 3")
     String name;
-
-    @Schema(description = "Chapter id is mandatory", example = "1")
-    @NotNull(message = "Chapter id is mandatory")
-    Long bookVolumeId;
 }

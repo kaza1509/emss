@@ -29,8 +29,8 @@ public class BookSeriesController {
 
     @Operation(summary = "Create book series")
     @PostMapping("")
-    public ResponseEntity<BookSeriesDTOResponse> create(@Valid @RequestBody BookSeriesDTORequest request) {
-        BookSeriesDTOResponse bookSeriesDTOResponse = bookSeriesService.createBookSeries(request);
+    public ResponseEntity<BookSeriesDTOResponse> create(@Valid @RequestBody BookSeriesDTORequest request, @RequestParam Long classId) {
+        BookSeriesDTOResponse bookSeriesDTOResponse = bookSeriesService.createBookSeries(request, classId);
         return ResponseEntity.ok(bookSeriesDTOResponse);
     }
 
@@ -42,17 +42,18 @@ public class BookSeriesController {
         return ResponseEntity.ok(bookSeriesDTOResponse);
     }
 
-    @Operation(summary = "Delete book series")
+    @Operation(summary = "Change Status book series")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        bookSeriesService.deleteBookSeries(id);
+    public ResponseEntity<Boolean> changeStatus(@PathVariable @NotEmpty Long id) {
+        bookSeriesService.changeStatus(id);
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "Search Book series")
-    @GetMapping("/display")
-    public PagingDTOResponse searchBookSeries(@ModelAttribute BookSeriesDTOFilter bookSeriesDTOFilter) {
-        return bookSeriesService.searchBookSeries(bookSeriesDTOFilter);
+    @Operation(summary = "Search Book series By ClassId")
+    @GetMapping("/display/{classId}")
+    public PagingDTOResponse searchBookSeries(@ModelAttribute BookSeriesDTOFilter bookSeriesDTOFilter,
+                                              @PathVariable(name = "classId" ) Long classId) {
+        return bookSeriesService.searchBookSeries(bookSeriesDTOFilter, classId);
     }
 
     @Operation(summary = "View book series by Id")
@@ -60,5 +61,21 @@ public class BookSeriesController {
     public ResponseEntity<BookSeriesDTOResponse> viewBookSeries(@PathVariable @NotEmpty Long id) {
         BookSeriesDTOResponse bookSeriesDTOResponse = bookSeriesService.viewBookSeriesById(id);
         return ResponseEntity.ok(bookSeriesDTOResponse);
+    }
+
+
+    @GetMapping("/list-by-subject-class")
+    public ResponseEntity<?> getListBookSeriesByClassesSubjectId(
+            @RequestParam(required = false) Long subjectId,
+            @RequestParam(required = false) Long classId
+    ) {
+        return ResponseEntity.ok(bookSeriesService.getListBookSeriesByClassesSubjectId(subjectId, classId));
+    }
+
+    @GetMapping("/list-by-class")
+    public ResponseEntity<?> getListBookSeriesByClassId(
+            @RequestParam(required = false) Long classId
+    ) {
+        return ResponseEntity.ok(bookSeriesService.getListBookSeriesByClassId(classId));
     }
 }

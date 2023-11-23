@@ -16,5 +16,6 @@ public class ClassDTOResponse {
     String name;
     boolean active;
     LocalDateTime createdAt;
-    Long userId;
+
+    String createBy;
 }

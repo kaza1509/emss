@@ -19,8 +19,4 @@ public class BookVolumeDTORequest {
     @NotEmpty(message = "BookVolume name is not null")
     @Length(min = 4, message = "BookVolume name is greater than 3")
     String name;
-
-    @Schema(description = "Subject id is mandatory", example = "1")
-    @NotNull(message = "Subject id is mandatory")
-    Long subjectId;
 }

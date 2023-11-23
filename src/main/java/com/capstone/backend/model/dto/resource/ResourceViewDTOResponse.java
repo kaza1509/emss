@@ -17,4 +17,6 @@ public class ResourceViewDTOResponse {
     ResourceType resourceType;
     Boolean isSave = false;
     Long point;
+    Long viewCount;
+    String resourceSrc;
 }

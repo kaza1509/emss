@@ -1,23 +1,22 @@
 package com.capstone.backend.service;
 
 import com.capstone.backend.model.dto.PagingDTOResponse;
-import com.capstone.backend.model.dto.bookvolume.BookVolumeDTOFilter;
-import com.capstone.backend.model.dto.bookvolume.BookVolumeDTOResponse;
 import com.capstone.backend.model.dto.chapter.ChapterDTOFilter;
-import com.capstone.backend.model.dto.chapter.ChapterDTOResponse;
 import com.capstone.backend.model.dto.chapter.ChapterDTORequest;
-import org.springframework.data.domain.Pageable;
+import com.capstone.backend.model.dto.chapter.ChapterDTOResponse;
 
 import java.util.List;
 
 public interface ChapterService {
-    public ChapterDTOResponse createChapter(ChapterDTORequest request);
+    public ChapterDTOResponse createChapter(ChapterDTORequest request, Long bookVolumeId);
 
     public ChapterDTOResponse updateChapter(Long id, ChapterDTORequest request);
 
-    public void deleteChapter(Long id);
+    void changeStatus(Long id);
 
-    public PagingDTOResponse searchChapter(ChapterDTOFilter chapterDTOFilter);
+    PagingDTOResponse searchChapter(ChapterDTOFilter chapterDTOFilter,Long bookVolumeId);
 
     public ChapterDTOResponse viewChapterById(Long id);
+
+    public List<ChapterDTOResponse> getListChapterByBookVolumeId(Long bookVolumeId);
 }

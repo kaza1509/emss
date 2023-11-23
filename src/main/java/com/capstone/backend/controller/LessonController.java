@@ -28,30 +28,33 @@ public class LessonController {
 
     @Operation(summary = "Create Lesson")
     @PostMapping("")
-    public ResponseEntity<LessonDTOResponse> create(@Valid @RequestBody LessonDTORequest request) {
-        LessonDTOResponse lessonDTOResponse = lessonService.createLesson(request);
-        return ResponseEntity.ok(lessonDTOResponse);
+    public ResponseEntity<LessonDTOResponse> create(
+            @Valid @RequestBody LessonDTORequest request,
+            @RequestParam Long chapterId
+    ) {
+        return ResponseEntity.ok(lessonService.createLesson(request, chapterId));
     }
 
     @Operation(summary = "Update Lesson")
     @PutMapping("/{id}")
     public ResponseEntity<LessonDTOResponse> update(@Valid @RequestBody LessonDTORequest request,
-                                                     @PathVariable @NotEmpty Long id) {
+                                                    @PathVariable @NotEmpty Long id) {
         LessonDTOResponse lessonDTOResponse = lessonService.updateLesson(id, request);
         return ResponseEntity.ok(lessonDTOResponse);
     }
 
-    @Operation(summary = "Delete Lesson")
+    @Operation(summary = "Change Status Lesson")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable @NotEmpty Long id) {
-        lessonService.deleteLesson(id);
+    public ResponseEntity<Boolean> changeStatus(@PathVariable @NotEmpty Long id) {
+        lessonService.changeStatus(id);
         return ResponseEntity.ok(true);
     }
 
-    @Operation(summary = "Search Lesson")
-    @GetMapping("/display")
-    public PagingDTOResponse searchLesson(@ModelAttribute LessonDTOFilter lessonDTOFilter) {
-        return lessonService.searchLesson(lessonDTOFilter);
+    @Operation(summary = "Search Lesson By chapterId")
+    @GetMapping("/display/{chapterId}")
+    public PagingDTOResponse searchLesson(@ModelAttribute LessonDTOFilter lessonDTOFilter,
+                                          @PathVariable(name = "chapterId" ) Long chapterId) {
+        return lessonService.searchLesson(lessonDTOFilter, chapterId);
     }
 
     @Operation(summary = "View Lesson by Id")
@@ -59,5 +62,10 @@ public class LessonController {
     public ResponseEntity<LessonDTOResponse> viewLesson(@PathVariable @NotEmpty Long id) {
         LessonDTOResponse lessonDTOResponse = lessonService.viewLessonById(id);
         return ResponseEntity.ok(lessonDTOResponse);
+    }
+
+    @GetMapping("list-by-chapter")
+    public ResponseEntity<?> getListLessonsByChapterId(@RequestParam(required = false) Long chapterId) {
+        return ResponseEntity.ok(lessonService.getListLessonsByChapterId(chapterId));
     }
 }

@@ -5,11 +5,22 @@ import com.capstone.backend.entity.ResourceTag;
 import com.capstone.backend.entity.Tag;
 import com.capstone.backend.entity.type.TableType;
 import com.capstone.backend.model.dto.resourcetag.ResourceTagDTOResponse;
+import com.capstone.backend.model.dto.resourcetag.ResourceTagDTOUpdate;
 import com.capstone.backend.model.dto.tag.TagDTOResponse;
+import com.capstone.backend.repository.ResourceRepository;
+import com.capstone.backend.utils.MessageException;
 
 import java.time.LocalDateTime;
 
 public class ResourceTagMapper {
+    private static ResourceRepository resourceRepository;
+    private static MessageException messageException;
+
+    public static void initialize(ResourceRepository repository, MessageException exception) {
+        resourceRepository = repository;
+        messageException = exception;
+    }
+
     public static ResourceTagDTOResponse toResourceTagDTOResponse(ResourceTag resourceTag) {
         TagDTOResponse tag = TagDTOResponse.builder()
                 .id(resourceTag.getTag().getId())
@@ -33,4 +44,15 @@ public class ResourceTagMapper {
                 .tag(tag)
                 .build();
     }
+
+    public static ResourceTag toResourceTag(Tag tag, ResourceTagDTOUpdate request) {
+        return ResourceTag.builder()
+                .detailId(request.getDetailId())
+                .tableType(TableType.valueOf(request.getTableType()))
+                .tag(tag)
+                .createdAt(LocalDateTime.now())
+                .active(true)
+                .build();
+    }
+
 }

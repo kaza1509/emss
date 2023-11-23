@@ -20,9 +20,4 @@ public class BookSeriesDTORequest {
     @NotEmpty(message = "Book series name is not null")
     @Length(min = 4, message = "Book series name is greater than 3")
     String name;
-
-    @Schema(description = "Class id is mandatory", example = "1")
-    @NotNull (message = "Class id is mandatory")
-    Long classId;
-
 }

@@ -27,4 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u.username from User u where u.id = :id")
     public String findUsernameByUserId(Long id);
+
+    @Query("select u from User u where u.avatar = :filename and u.active = true")
+    public User findUserByAvatarUrl(String filename);
 }

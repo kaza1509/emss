@@ -7,7 +7,6 @@ import com.capstone.backend.model.dto.resource.FileDTOResponse;
 import com.capstone.backend.service.FileService;
 import com.capstone.backend.utils.ConvertResourceToImage;
 import com.capstone.backend.utils.DataHelper;
-import com.capstone.backend.utils.FileHelper;
 import com.capstone.backend.utils.MessageException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,9 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -179,8 +179,8 @@ public class FileServiceImpl implements FileService {
             }
 
             //concat new filename and extension
-            String fileName = userLoggedIn.getUsername().concat(".").concat(fileNameExtension);
-            System.out.println(fileName);
+            String fileName = UUID.randomUUID().toString()
+                    .concat(".").concat(fileNameExtension);
             //save file name to folder
             FileCopyUtils.copy(
                     multipartFile.getBytes(),

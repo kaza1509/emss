@@ -54,7 +54,7 @@ public class ResourceCriteria {
 
         Query countQuery = em.createQuery(sql.toString().replace("select r", "select count(r.id)"));
 
-        sql.append(" order by r.createdAt ");
+        sql.append(" order by r.viewCount desc, r.createdAt desc ");
 
         Long pageIndex = resourceDTOFilter.getPageIndex();
         Long pageSize = resourceDTOFilter.getPageSize();

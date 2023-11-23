@@ -14,6 +14,7 @@ import com.capstone.backend.repository.UserRepository;
 import com.capstone.backend.service.CommentService;
 import com.capstone.backend.utils.FileHelper;
 import com.capstone.backend.utils.MessageException;
+import com.capstone.backend.utils.UserHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,12 +31,11 @@ public class CommentServiceImpl implements CommentService {
     UserRepository userRepository;
     ResourceRepository resourceRepository;
     MessageException messageException;
+    UserHelper userHelper;
 
     @Override
     public CommentDTOResponse createComment(CommentDTORequest request) {
-        User commenter = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND));
-
+        User commenter = userHelper.getUserLogin();
         Resource resource = resourceRepository.findById(request.getResourceId())
                 .orElseThrow(() -> ApiException.notFoundException(messageException.MSG_RESOURCE_NOT_FOUND));
 

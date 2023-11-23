@@ -15,4 +15,5 @@ public class UserSharedDTOResponse {
     String email;
     String username;
     String permission;
+    String avatar;
 }

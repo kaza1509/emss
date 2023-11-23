@@ -1,6 +1,5 @@
 package com.capstone.backend.entity.type;
 
-import com.capstone.backend.entity.ResourceTag;
 import lombok.Getter;
 
 import java.util.List;

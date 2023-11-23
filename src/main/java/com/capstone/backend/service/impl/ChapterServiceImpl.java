@@ -11,23 +11,20 @@ import com.capstone.backend.model.dto.chapter.ChapterDTOResponse;
 import com.capstone.backend.model.mapper.ChapterMapper;
 import com.capstone.backend.repository.BookVolumeRepository;
 import com.capstone.backend.repository.ChapterRepository;
-import com.capstone.backend.repository.LessonRepository;
-import com.capstone.backend.repository.criteria.BookVolumeCriteria;
+import com.capstone.backend.repository.UserRepository;
 import com.capstone.backend.repository.criteria.ChapterCriteria;
 import com.capstone.backend.service.ChapterService;
+import com.capstone.backend.utils.MessageException;
 import com.capstone.backend.utils.UserHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,16 +32,22 @@ import java.util.stream.Collectors;
 public class ChapterServiceImpl implements ChapterService {
     ChapterRepository chapterRepository;
     BookVolumeRepository bookVolumeRepository;
-    LessonRepository lessonRepository;
     ChapterCriteria chapterCriteria;
     UserHelper userHelper;
+    MessageException messageException;
+    UserRepository userRepository;
 
     @Override
-    public ChapterDTOResponse createChapter(ChapterDTORequest request) {
+    public ChapterDTOResponse createChapter(ChapterDTORequest request, Long bookVolumeId) {
         User userLogged = userHelper.getUserLogin();
-        // find book volume id
+
+        Optional<Chapter> chapterOptional = chapterRepository.findByName(request.getName(), 0L, bookVolumeId);
+        if (chapterOptional.isPresent()) {
+            throw ApiException.badRequestException("Duplicate chapter name in book volume");
+        }
+
         BookVolume bookVolume = bookVolumeRepository
-                .findById(request.getBookVolumeId())
+                .findById(bookVolumeId)
                 .orElseThrow(() -> ApiException.notFoundException("BookVolume is not found"));
         //add chapter
         Chapter chapter = Chapter.builder()
@@ -54,63 +57,90 @@ public class ChapterServiceImpl implements ChapterService {
                 .userId(userLogged.getId())
                 .bookVolume(bookVolume)
                 .build();
+        User user = userRepository.findById(bookVolume.getUserId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
         chapter = chapterRepository.save(chapter);
-        return ChapterMapper.toChapterDTOResponse(chapter);
+        return ChapterMapper.toChapterDTOResponse(chapter, user.getUsername());
     }
 
     @Override
     public ChapterDTOResponse updateChapter(Long id, ChapterDTORequest request) {
-        //find book volume id
-        BookVolume bookVolume = bookVolumeRepository
-                .findById(request.getBookVolumeId())
-                .orElseThrow(() -> ApiException.notFoundException("BookVolume is not found"));
-        // find chapter id want to update
+        User userLogged = userHelper.getUserLogin();
+
         Chapter chapter = chapterRepository
-                .findByIdAndActiveTrue(id)
+                .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("Chapter is not found"));
+
+        Optional<Chapter> chapterOptional = chapterRepository.findByName(request.getName(), id, chapter.getBookVolume().getId());
+        if (chapterOptional.isPresent()) {
+            throw ApiException.badRequestException("Duplicate chapter name in book volume");
+        }
+        // find chapter id want to update
+        User user = userRepository.findById(chapter.getBookVolume().getId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
         //update
         chapter.setName(request.getName());
-        chapter.setBookVolume(bookVolume);
+        chapter.setUserId(user.getId());
 
         chapter = chapterRepository.save(chapter);
-        return ChapterMapper.toChapterDTOResponse(chapter);
+        return ChapterMapper.toChapterDTOResponse(chapter, user.getUsername());
     }
 
     @Override
-    public void deleteChapter(Long id) {
+    public void changeStatus(Long id) {
         //find id want to delete
         Chapter chapter = chapterRepository
-                .findByIdAndActiveTrue(id)
+                .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("Chapter is not found"));
         //delete
         // check can delete
-        if(isCanDelete(chapter)) {
-            chapter.setActive(false);
+        if (isCanChangeStatus(chapter)) {
+            chapter.setActive(!chapter.getActive());
             chapterRepository.save(chapter);
         } else {
-           // throw exception warning
-           throw ApiException.conflictResourceException("Can not delete Chapter because Lesson already exists");
+            // throw exception warning
+            throw ApiException.conflictResourceException("Can not change status Chapter because Lesson already exists");
         }
-
     }
 
     @Override
-    public PagingDTOResponse searchChapter(ChapterDTOFilter chapterDTOFilter) {
-        return chapterCriteria.searchChapter(chapterDTOFilter);
+    public PagingDTOResponse searchChapter(ChapterDTOFilter chapterDTOFilter, Long bookVolumeId) {
+        BookVolume bookVolume = bookVolumeRepository.findById(bookVolumeId)
+                .orElseThrow(() -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND));
+        return chapterCriteria.searchChapter(chapterDTOFilter, bookVolume.getId());
     }
 
 
     @Override
     public ChapterDTOResponse viewChapterById(Long id) {
         Chapter chapter = chapterRepository
-                .findByIdAndActiveTrue(id)
+                .findById(id)
                 .orElseThrow(() -> ApiException.notFoundException("Chapter is not found"));
-        return ChapterMapper.toChapterDTOResponse(chapter);
+        User user = userRepository.findById(chapter.getUserId())
+                .orElseThrow(
+                        () -> ApiException.notFoundException(messageException.MSG_USER_NOT_FOUND)
+                );
+        return ChapterMapper.toChapterDTOResponse(chapter, user.getUsername());
+    }
+
+    @Override
+    public List<ChapterDTOResponse> getListChapterByBookVolumeId(Long bookVolumeId) {
+        List<Chapter> chapters = new ArrayList<>();
+        if(bookVolumeId == null) {
+            chapters = chapterRepository.findChapterByActiveTrue();
+        }
+        else {
+            chapters = chapterRepository.findAllByBookVolumeId(bookVolumeId);
+        }
+        return chapters.stream().map(ChapterMapper::toChapterDTOResponse).toList();
     }
 
     // Check exist lesson in chapter
-    boolean isCanDelete(Chapter chapter){
-
-        return !lessonRepository.existsLessonByChapterAndActiveTrue(chapter);
+    boolean isCanChangeStatus(Chapter chapter) {
+        return chapter.getLessonList().isEmpty();
     }
 }
