@@ -34,9 +34,10 @@ public class ResourceCriteria {
     UserResourceRepository userResourceRepository;
     CheckPermissionResource checkPermissionResource;
 
+//    @org.springframework.data.jpa.repository.Query("select distinct r from Resource r join r.resourceTagList rt join rt.tag t where 1 = 1 ")
     public PagingResourceDTOResponse searchMediaResource(Set<Long> listResourceGrouped, ResourceMediaDTOFilter resourceDTOFilter) {
         User userLoggedIn = userHelper.getUserLogin();
-        StringBuilder sql = new StringBuilder("select r from Resource r where 1 = 1 ");
+        StringBuilder sql = new StringBuilder("select distinct r from Resource r join r.resourceTagList rt join rt.tag t where 1 = 1 ");
         Map<String, Object> params = new HashMap<>();
 
         if (!listResourceGrouped.isEmpty()) {
@@ -45,14 +46,15 @@ public class ResourceCriteria {
         }
 
         if (resourceDTOFilter.getName() != null) {
-            sql.append(" and r.name like :name ");
-            params.put("name", "%" + resourceDTOFilter.getName() + "%");
+            sql.append(" and (r.name like :name1 or t.name like :name2) ");
+            params.put("name1", "%" + resourceDTOFilter.getName() + "%");
+            params.put("name2", "%" + resourceDTOFilter.getName() + "%");
         }
 
         sql.append(" and r.tabResourceType = :tabResourceType ");
         params.put("tabResourceType", resourceDTOFilter.getTabResourceType());
 
-        Query countQuery = em.createQuery(sql.toString().replace("select r", "select count(r.id)"));
+        Query countQuery = em.createQuery(sql.toString().replace("select distinct r", "select count(distinct r.id)"));
 
         sql.append(" order by r.viewCount desc, r.createdAt desc ");
 

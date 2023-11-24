@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ClassLessonId {
+public class  ClassLessonId {
     Long classId;
     Long bookSeriesId;
     Long subjectId;
